@@ -1,62 +1,20 @@
-# Twinkl TypeScript Test
+# Twinkl TypeScript Tech Test
 
-- [Task](#task)
-- [Development Environment Setup](#setup)
-- [What we are looking for](#what-we-are-looking-for)
+This is a simple API, written in Typescript, that makes use of Express for routing, Drizzle ORM for database management, and Jest for tests.
 
-## Task
-
-Your task is to implement a backend API (no front-end is required).
-
-These are the requirements for the system:
-
-1. User Signup Endpoint
-    1. A `POST` endpoint, that accepts JSON, containing the user full name, password, email address, created date, and the user type (one of a student, teacher, parent or private tutor).
-    1. Validation. The app should check that the fields submitted are not empty. The app should also check that the password matches the following rules:
-        1. Between 8 and 64 characters
-        1. Must contain at least one digit (0-9)
-        1. Must contain at least one lowercase letter (a-z)
-        1. Must contain at least one uppercase letter (A-Z)
-    1. When validation fails the app should return an appropriate status code with error/s that can be used by the client
-1. Save the signup information to a data store. We recommend an in-memory data store (i.e an array) or a lightweight file database like SQLLite.
-1. User Signup Details
-    1. A `GET` endpoint that takes a user ID and returns the user details as JSON.
-1. Create whatever level of testing and documentation you consider appropriate
-
-## What we are looking for
-
-* Submit something that we can run locally
-* Commiting changes with good messages as you go is very helpful
-* You can update the README or add a NOTES.md detailing any decisions/tradeoffs you made, or changes you would make with more time
-* Clean, secure, modular code written to your own standards of what good looks like. Add concise comments in the code if you want to explain a decision. 
-* Pragmatism. We are not looking for complex solutions, and there is no hidden trick requirement in our task ;) 
-* Feel free to install and use additional packages
-
-## Setup
-
-### Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed on your machine:
 
 - [Node.js](https://nodejs.org/): Ensure that Node.js, preferably version 16 or higher, is installed on your system, as this project utilizes the latest versions of TypeScript and Nodemon.
 - [npm](https://www.npmjs.com/): npm is the package manager for Node.js and comes with the Node.js installation.
 
-### Installation
-
-This will install a basic [Express](https://expressjs.com/) app with Typescript.
-
-If you have been provided with a Github URL, clone the repository to your local machine:
-
-```
-git clone https://github.com/twinkltech/twinkl-typescript-tech-test.git
-```
-
-If you have been provided with a zip file, download to your computer and unzip.
+## Set up
 
 Navigate to the directory:
 
 ```
-cd twinkl-typescript-tech-test
+cd twinkl-typescript-node
 ```
 
 Install the dependencies:
@@ -65,26 +23,60 @@ Install the dependencies:
 npm i
 ```
 
-### Usage
-
-In development the following command will start the server and use `nodemon` to auto-reload the server based on file changes
+Start application and generate database:
 
 ```
 npm run dev
 ```
 
-The server will start at `http://localhost:3000` by default. You can change the port in `src/index.ts` 
-
-There are no tests in the project at the moment, but a command is available to run:
+Run migrations:
 
 ```
-npm run test
+npm run migrate:apply
 ```
 
-There are also commands to build and start a server without nodemon:
+## Environment Variables
 
-```
-npm run build
-npm start
-```
+- PORT - The port for the API to run on.
+- DB_NAME - The name that Drizzle will use to connect to the database to create and update it.
 
+## Structure
+
+The API is split into 3 separate layers: Route layer, Library layer, and Database layer
+
+### Route Layer
+
+This is where the routing logic is handled, it is split up into separate files for each resource type so that it can be easily extended when further resources are added.
+This should only contain logic related to routing such as express router setup, middleware, and response formatting.
+This project uses express for routing.
+
+### Library Layer
+
+This is where the business logic of the API is located. There is a separate file for each resource. Any logic relating to business rules, such as data tranformation, should be done at this layer.
+The functions in this layer are wrapped in a function to allow the database functions to be injected in, which allows for the library and database layers to be independent and ease of testing.
+
+### Database Layer
+
+This is where the code that interacts with the database is. There should be no logic in this layer except database queries, it should be kept as simple as possible.
+This project uses Drizzle ORM with an SQLite database, as such the schema is created as typescript code, this can be found in `src/db/schema.ts`. When making a change to the schema here then a migration has to be generated using the `npm run migrate:generate` command followed by `npm run migrate:apply` to update the database.
+
+## Tests
+
+There are a mix of integration and unit tests found in the tests/ directory.
+
+- Integration tests cover each endpoint and mock the db layer to ensure no testing data gets added to the system.
+- Unit tests cover the library layer and middleware in the route layer.
+
+  - This is where the majority of the logic for the application lives.
+  - The routes and db layer are not included in the unit tests as these layers interact directly with packages as such we would need to mock quite complex objects.
+
+  To run the tests:
+
+  ```
+  npm test
+  ```
+
+## Improvements
+
+- Ensure emails are unique in the DB.
+- Change the DB to use a pool.

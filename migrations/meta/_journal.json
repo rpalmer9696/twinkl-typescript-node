@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1737553662497,
+      "tag": "0000_secret_the_anarchist",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1737799105991,
+      "tag": "0001_silky_exiles",
+      "breakpoints": true
+    }
+  ]
+}
